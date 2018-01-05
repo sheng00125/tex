@@ -1,0 +1,191 @@
+﻿\documentclass[UTF-8,12pt]{ctexart}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts,delarray,amsthm,amssymb}
+\usepackage{fancyhdr,graphicx,multirow,longtable,booktabs,cite,float,caption}
+\usepackage{titlesec,enumerate,xcolor,dsfont,chemarrow,amscd,subfigure}
+\usepackage{xeCJK}
+\usepackage[margin=1in]{geometry}
+\usepackage{url,bm,titletoc,wallpaper}
+\usepackage[font=small,labelfont=bf,labelsep=none]{caption}
+% ---------------------------------------------------------
+\captionsetup{font={footnotesize},labelfont={footnotesize}}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\CTEXsetup[number={\chinese{section}},format={\Large\bfseries}]{section}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\large\bfseries}{\thesubsubsection}{1em}{}
+%----------------------------------------------------
+\title{无线能量传输装置}%
+\author{洪晟}%
+
+\begin{document}
+\makeatletter
+\renewcommand{\tablename}{表}
+\renewcommand{\figurename}{图}
+\renewcommand{\thefigure}{\thesection.\arabic{figure}\quad}
+\renewcommand{\thetable}{\thesection.\arabic{table}\quad}
+\makeatother
+
+\maketitle
+\pagestyle{fancy}
+\zihao{-4}
+
+\section{无线能量传输方案设计}
+
+
+
+\subsection{MOSFET器件方案设计}
+
+{\bf{采用MOSFET器件作为逆变电路的开关管。产生几十Khz的谐振，通过多股并绕的漆包线作为线圈，将能量耦合到次级。}}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.6]{wire1.jpg}
+  \caption{MOSFET逆变电路}
+  \label{图1 MOSFET逆变电路}
+\end{figure}
+
+
+\subsection{GaN器件方案设计}
+
+{\bf{采用GaN器件作为逆变电路的开关管，产生上兆赫兹的谐振，通过PCB天线作为传输天线，将能量耦合到次级。}}
+
+\begin{figure}[htbp]
+\centering %居中
+\subfigure[基于GaN器件的全桥功放设计]{                    %第一张子图
+\begin{minipage}{7cm}
+\centering                                                          %子图居中
+\includegraphics[height=6cm]{GaN1.jpg}               %以pic.jpg的0.5倍大小输出
+\end{minipage}}
+\subfigure[GaN器件PCB天线设计]{                    %第二张子图
+\begin{minipage}{7cm}
+\centering                                                          %子图居中
+\includegraphics[height=6cm]{GaN1_power.jpg}                %以pic.jpg的0.5倍大小输出
+\end{minipage}}
+\caption{GaN方案设计} %   %大图名称
+\label{fig:1}         % 图片引用标记
+\end{figure}
+
+
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=1]{Amp_power.jpg}
+  \caption{扫频时PCB线圈上的幅度变化}
+  \label{幅度变化}
+\end{figure}
+{\bf{依据图\ref{幅度变化}可得出线圈的谐振频率在8Mhz时，为最大谐振点。}}
+
+\begin{equation}
+L=N^2*R \times \mu_0[\ln(\frac{8R}{a})-1.75]
+\label{L}
+\end{equation}
+
+式中\[\begin{split}
+&N\text{——线圈匝数} \\
+&\mu_0=4\pi \times 10^{-7}\text{——真空磁导率} \\
+&R\text{——线圈半径} \\
+&a\text{——线圈导线半径} \\
+\end{split}\]
+
+
+
+{\bf{我们选取线径为0.1mm的50股并绕的里兹线作为线圈材料，所以铜线的半径为0.005m，另外线圈缠绕8周，线圈半径为0.1m。
+
+带入估算公式可得出L的数值为：26.74uF}}
+
+\begin{equation}
+f=\frac{1}{2\pi\sqrt{LC}}
+\label{frequency}
+\end{equation}
+
+将L、C的参数带入公式\ref{frequency}可知谐振频率为
+
+\[
+f=\frac{1}{2\pi\sqrt{LC}}
+\]
+
+\[\begin{split}
+f &= a+b  \\
+  &= c+d  \\
+\end{split}\]
+
+
+
+
+\section{MOSFET方案设计}
+
+\subsection{系统硬件框图}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=18cm]{sys.pdf}
+  \caption{MOSFET方案系统框图}
+  \label{sch_MOSFET}
+\end{figure}
+    {\bf{
+    初级发射原理设计：
+    }}
+        包含IR2110 2片MOSFET驱动芯片、4个IRF540 MOSFET构成的E类功放谐振电路系统，初级电流采样用于MOSFET过流保护，防止MOSFET 烧坏。NRF24L01 2.4G Zigbee数据透传用于收集次级的电压电流，实现次级的闭环控制。
+        
+    {\bf{
+    次级接收原理设计：
+    }}
+        由功率二极管构成的整流电路，包含电流采样、电压采样电路，用于采集负载上的电压电流，并通过NRF24L01透传给初级，作为初级的闭环控制信号。
+        
+        
+\subsection{硬件电路设计}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=15cm]{WPT_E1.pdf}
+  \caption{MOSFET方案——发射端原理图}
+  \label{sch_MOSFET}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=15cm]{WPT-2.pdf}
+  \caption{MOSFET方案——接收端原理图}
+  \label{sch_MOSFET_R}
+\end{figure}
+
+
+\subsection{程序框图}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=15cm]{pri.pdf}
+  \caption{初级发射电路程序框图}
+  \label{frame_prim}
+\end{figure}
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=15cm]{sub.pdf}
+  \caption{次级接收电路程序框图}
+  \label{frame_prim}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=15cm]{control.pdf}
+  \caption{PID控制闭环程序框图}
+  \label{control}
+\end{figure}
+
+
+\subsection{驱动电路}
+
+
+\begin{enumerate}[$\bullet$]
+\item 完成MOSFET器件的全桥功放的设计和验证
+\item 使用Solidworks对线圈进行设计，3D打印线圈骨架
+\item 学习HFSS对线圈仿真
+\item 设计了GaN器件的全桥功放
+\item 根据文献参数，制作高频PCB天线
+\end{enumerate}
+
+
+% ----end------------------------------------------------------------
+\end{document}
+% ----------------------------------------------------------------
